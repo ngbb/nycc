@@ -28,18 +28,31 @@ getContestCaps <- function(contestNumber) {
 }
 
 getIssueCaptions <- function(pageNumber) {
-
+  
   cap <- read_html(paste0("http://www.newyorker.com/cartoons/daily-cartoon/page/", pageNumber))
   caps <- html_nodes(cap, ".p-summary")
   caps <- as.character(caps)
-
+  
   for(i in 1:length(caps)) {
     caps[i] <- gsub("“", "", caps[i])
     caps[i] <- gsub("”", "", caps[i])
     caps[i] <- gsub("<.*?>", "", caps[i])
+    caps[i] <- gsub("\"", "", caps[i])
   }
+  
+  sess <- html_session(paste0("http://www.newyorker.com/cartoons/daily-cartoon/page/", pageNumber))
+  imgsrc <- sess %>%
+    read_html() %>%
+    html_nodes("img")
 
-  return(caps)
+  imgsrc <- unlist(str_split(imgsrc, "src\\=\""))
+  imgsrc <- imgsrc[str_detect(imgsrc, "http\\://www.newyorker.com/wp-content/uploads")]
+  imgs <- unlist(str_split(imgsrc, "\""))
+  imgs <- imgs[str_detect(imgs, "http\\://www.newyorker.com/wp-content/uploads")]
+  
+  imgs <- imgs[str_sub(imgs, start = -3) == "jpg" & str_sub(imgs, start = 1, end = 4) == "http"]
+
+  return(list(caps, imgs))
 }
 
 # -----------------------------------------------------------------
@@ -79,13 +92,16 @@ issueCaptions <- NULL
 for(i in dailyPageNums) {
   temp <- getIssueCaptions(i)
 
-  # not perfect, but treat published captions as contest winners
-  df <- data.frame(temp, 1, stringsAsFactors = FALSE)
-  issueCaptions <- bind_rows(issueCaptions, df)
+  issueCaptions <- if(i == 1) {
+    temp
+  } else {
+    Map(c, issueCaptions, temp)
+    }
 }
 
-names(issueCaptions) <- c("Caption", "Rank")
+names(issueCaptions) <- c("Caption", "Image")
 
 # Save issue caption dataset --------------------------
 
-write_csv(issueCaptions, paste0(datadir, "issuecaptions.csv"))
+write_csv(data.frame(issueCaptions$Caption, stringsAsFactors = FALSE), paste0(datadir, "issuecaptions.csv"))
+write_csv(data.frame(issueCaptions$Image, stringsAsFactors = FALSE), paste0(datadir, "issueimages.csv"))
