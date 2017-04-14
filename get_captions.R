@@ -12,17 +12,20 @@ getContestCaps <- function(contestNumber) {
 
   cap <- read_html(paste0("http://contest.newyorker.com/CaptionContest.aspx?id=", contestNumber))
   caps <- html_nodes(cap, ".cap em")
-
   caps <- as.character(caps)
-
-  # clean bad quotation marks and html tags
-  for(i in 1:length(caps)) {
-    caps[i] <- gsub("\"", "", caps[i])
-    caps[i] <- gsub("“", "", caps[i])
-    caps[i] <- gsub("”", "", caps[i])
-    caps[i] <- gsub("\\\\", "", caps[i])
-    caps[i] <- gsub("<.*?>", "", caps[i])
-  }
+  
+  # clean up strings
+  caps <- str_replace_all(caps, "“", "")
+  caps <- str_replace_all(caps, "”", "")
+  caps <- str_replace_all(caps, "<.*?>", "")
+  caps <- str_replace_all(caps, "\"", "")
+  caps <- str_replace_all(caps, "’", "'")
+  caps <- str_replace_all(caps, "‘", "'")
+  caps <- str_replace_all(caps, "—", ", ")
+  caps <- str_replace_all(caps, "…", "")
+  caps <- str_replace_all(caps, "\U2011", "-")
+  caps <- str_replace_all(caps, "\U00A0", "")
+  caps <- str_replace_all(caps, "(?<=\\b[A-Z])[.](?=[A-Z]|[ a-z]|[,])", "")
 
   return(caps)
 }
@@ -32,13 +35,19 @@ getIssueCaptions <- function(pageNumber) {
   cap <- read_html(paste0("http://www.newyorker.com/cartoons/daily-cartoon/page/", pageNumber))
   caps <- html_nodes(cap, ".p-summary")
   caps <- as.character(caps)
-  
-  for(i in 1:length(caps)) {
-    caps[i] <- gsub("“", "", caps[i])
-    caps[i] <- gsub("”", "", caps[i])
-    caps[i] <- gsub("<.*?>", "", caps[i])
-    caps[i] <- gsub("\"", "", caps[i])
-  }
+
+  # clean up strings
+  caps <- str_replace_all(caps, "“", "")
+  caps <- str_replace_all(caps, "”", "")
+  caps <- str_replace_all(caps, "<.*?>", "")
+  caps <- str_replace_all(caps, "\"", "")
+  caps <- str_replace_all(caps, "’", "'")
+  caps <- str_replace_all(caps, "‘", "'")
+  caps <- str_replace_all(caps, "—", ", ")
+  caps <- str_replace_all(caps, "…", "")
+  caps <- str_replace_all(caps, "\U2011", "-")
+  caps <- str_replace_all(caps, "\U00A0", "")
+  caps <- str_replace_all(caps, "(?<=\\b[A-Z])[.](?=[A-Z]|[ a-z]|[,])", "")
   
   sess <- html_session(paste0("http://www.newyorker.com/cartoons/daily-cartoon/page/", pageNumber))
   imgsrc <- sess %>%
@@ -103,5 +112,10 @@ names(issueCaptions) <- c("Caption", "Image")
 
 # Save issue caption dataset --------------------------
 
-write_csv(data.frame(issueCaptions$Caption, stringsAsFactors = FALSE), paste0(datadir, "issuecaptions.csv"))
-write_csv(data.frame(issueCaptions$Image, stringsAsFactors = FALSE), paste0(datadir, "issueimages.csv"))
+issuecaps <- data.frame(issueCaptions$Caption, stringsAsFactors = FALSE)
+names(issuecaps) <- c("Caption")
+issueimgs <- data.frame(issueCaptions$Image, stringsAsFactors = FALSE)
+names(issueimgs) <- c("Image")
+
+write_csv(issuecaps, paste0(datadir, "issuecaptions.csv"))
+write_csv(issueimgs, paste0(datadir, "issueimages.csv"))
