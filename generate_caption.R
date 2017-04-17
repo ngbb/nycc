@@ -21,9 +21,6 @@ imgs <- read_csv(paste0(datadir, "issueimages.csv"))
 
 caps <- bind_rows(caps1, caps2)
 
-# process data ---------------
-
-
 # concatenate all captions into single string
 all_text <- str_c(caps$Caption, collapse = " ")
 
@@ -53,12 +50,13 @@ makeCaption <- function(caplist, cutofflength = 7) {
 sendTweet <- function() {
   gencap1 <- makeCaption(split_by_sentence(babble(captionNgram, genlen = 1000)))
   img <- sample(imgs$Image, 1)
-  download.file(img, destfile = "temp.jpg")
+  tempname <- paste0(sample(100000:999999, 1), ".jpg")
+  download.file(img, destfile = tempname)
 
   # add quotes around caption
-  tweet(paste0("\"", gencap1, "\""), mediaPath = "temp.jpg")
+  tweet(paste0("\"", gencap1, "\""), mediaPath = tempname)
 
-  file.remove("temp.jpg")
+  file.remove(tempname)
 }
 
 # run sendTweet function

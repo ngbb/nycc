@@ -26,6 +26,7 @@ getContestCaps <- function(contestNumber) {
   caps <- str_replace_all(caps, "\U2011", "-")
   caps <- str_replace_all(caps, "\U00A0", "")
   caps <- str_replace_all(caps, "(?<=\\b[A-Z])[.](?=[A-Z]|[ a-z]|[,])", "")
+  caps <- str_replace_all(caps, " . . .", "...")
 
   return(caps)
 }
@@ -48,6 +49,7 @@ getIssueCaptions <- function(pageNumber) {
   caps <- str_replace_all(caps, "\U2011", "-")
   caps <- str_replace_all(caps, "\U00A0", "")
   caps <- str_replace_all(caps, "(?<=\\b[A-Z])[.](?=[A-Z]|[ a-z]|[,])", "")
+  caps <- str_replace_all(caps, " . . .", "...")
   
   sess <- html_session(paste0("http://www.newyorker.com/cartoons/daily-cartoon/page/", pageNumber))
   imgsrc <- sess %>%
