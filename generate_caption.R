@@ -4,11 +4,14 @@ library(readr)
 library(ngram)
 library(twitteR)
 
-# get twitter authorization
-source("./twitter_info.R")
-
-topdir <- getwd()
+# establish directory
+ifelse(Sys.info()["nodename"] == "localhost",
+       topdir <- "/home/baron/projects/nycc/",
+       topdir <- "/ua/baron/scripts/nycc/")
 datadir <- paste0(topdir, "/data/")
+
+# get twitter authorization
+source(paste0(topdir, "twitter_info.R"))
 
 # load data ------------------
 
