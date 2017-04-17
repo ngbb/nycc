@@ -4,6 +4,7 @@ library(readr)
 library(ngram)
 library(twitteR)
 
+# get twitter authorization
 source("./twitter_info.R")
 
 topdir <- getwd()
@@ -17,31 +18,27 @@ imgs <- read_csv(paste0(datadir, "issueimages.csv"))
 
 caps <- bind_rows(caps1, caps2)
 
-
 # process data ---------------
-caps <- caps %>%
-  mutate(caplength = str_count(Caption, "\\S+"))
+
 
 # concatenate all captions into single string
 all_text <- str_c(caps$Caption, collapse = " ")
 
+# generate n-gram (n=2)
 captionNgram <- ngram(all_text)
 
-tt <- babble(captionNgram, genlen = 1000, seed = 12346)
-
-#rr <- str_split(tt, "[[:punct:]]")
-
+# split a babble into separate sentences, remove first and last partial sentences
 split_by_sentence <- function (text) {
   result <- unlist(strsplit(text, '(?<=[!?.])[[:space:]]*', perl = TRUE))
   result <- result[!str_detect(result, "^(\\&|\\'|\\`)")]
   return(result[2:(length(result) - 1)])
 }
 
-
-makeCaption <- function(caplist) {
+# pick a sentence from the split babble; pick 2 if first is short
+makeCaption <- function(caplist, cutofflength) {
   captionsample <- sample(caplist, 2)
   
-  if(str_count(captionsample[1], "\\S+") >= 7) {
+  if(str_count(captionsample[1], "\\S+") >= cutofflength) {
     caption <- captionsample[1]
   } else {
     caption <- paste(captionsample[1], captionsample[2])
@@ -49,15 +46,17 @@ makeCaption <- function(caplist) {
   return(caption)
 }
 
+# tweet image + caption
 sendTweet <- function() {
   gencap1 <- makeCaption(split_by_sentence(babble(captionNgram, genlen = 1000)))
   img <- sample(imgs$Image, 1)
   download.file(img, destfile = "temp.jpg")
 
-  #tweet(gencap1, mediaPath = "temp.jpg")
+  # add quotes around caption
   tweet(paste0("\"", gencap1, "\""), mediaPath = "temp.jpg")
 
   file.remove("temp.jpg")
 }
 
-## it works!
+# run sendTweet function
+sendTweet()
