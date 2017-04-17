@@ -3,3 +3,4 @@ twitter_info.R
 test*
 *.Rout
 .RData
+images*
