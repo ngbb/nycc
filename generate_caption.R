@@ -38,7 +38,7 @@ split_by_sentence <- function (text) {
 }
 
 # pick a sentence from the split babble; pick 2 if first is short
-makeCaption <- function(caplist, cutofflength) {
+makeCaption <- function(caplist, cutofflength = 7) {
   captionsample <- sample(caplist, 2)
   
   if(str_count(captionsample[1], "\\S+") >= cutofflength) {
