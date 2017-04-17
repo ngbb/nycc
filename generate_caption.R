@@ -31,7 +31,9 @@ captionNgram <- ngram(all_text)
 split_by_sentence <- function (text) {
   result <- unlist(strsplit(text, '(?<=[!?.])[[:space:]]*', perl = TRUE))
   result <- result[!str_detect(result, "^(\\&|\\'|\\`)")]
-  return(result[2:(length(result) - 1)])
+  result <- result[2:(length(result) - 1)]
+  result <- result[which(nchar(result) > 2)]
+  return(result)
 }
 
 # pick a sentence from the split babble; pick 2 if first is short
