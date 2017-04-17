@@ -53,13 +53,15 @@ sendTweet <- function() {
   gencap1 <- makeCaption(split_by_sentence(babble(captionNgram, genlen = 1000)))
   img <- sample(imgs$Image, 1)
   tempname <- paste0(sample(100000:999999, 1), ".jpg")
-  download.file(img, destfile = tempname)
+  tempfile <- paste0(topdir, tempname)
+  download.file(img, destfile = tempfile)
 
   # add quotes around caption
-  tweet(paste0("\"", gencap1, "\""), mediaPath = tempname)
+  tweet(paste0("\"", gencap1, "\""), mediaPath = tempfile)
 
-  file.remove(tempname)
+  file.remove(tempfile)
 }
 
 # run sendTweet function
 sendTweet()
+

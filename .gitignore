@@ -1,2 +1,5 @@
 .httr-oauth
 twitter_info.R
+test*
+*.Rout
+.RData
