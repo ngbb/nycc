@@ -31,6 +31,7 @@ captionNgram <- ngram(all_text)
 split_by_sentence <- function (text) {
   result <- unlist(strsplit(text, '(?<=[!?.])[[:space:]]*', perl = TRUE))
   result <- result[!str_detect(result, "^(\\&|\\'|\\`)")]
+  result <- result[!str_detect(result, "^[a-z]")]
   result <- result[2:(length(result) - 1)]
   result <- result[which(nchar(result) > 2)]
   return(result)
