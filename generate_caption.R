@@ -5,9 +5,11 @@ library(ngram)
 library(twitteR)
 
 # establish directory
-ifelse(Sys.info()["nodename"] == "localhost",
-       topdir <- "/home/baron/projects/nycc/",
-       topdir <- "/ua/baron/scripts/nycc/")
+ifelse(Sys.info()["login"] == "ec2-user",
+       topdir <- "/home/ec2-user/projects/nycc/",
+       ifelse(Sys.info()["nodename"] == "localhost",
+              topdir <- "/home/baron/projects/nycc/",
+              topdir <- "/ua/baron/scripts/nycc/"))
 datadir <- paste0(topdir, "data/")
 
 # get twitter authorization
