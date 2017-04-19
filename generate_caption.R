@@ -1,4 +1,4 @@
-library(tidyverse)
+library(dplyr)
 library(stringr)
 library(readr)
 library(ngram)
