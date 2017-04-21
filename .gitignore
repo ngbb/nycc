@@ -4,3 +4,4 @@ test*
 *.Rout
 .RData
 images*
+new_phrasetable*
