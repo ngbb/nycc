@@ -73,7 +73,7 @@ getIssueCaptions <- function(pageNumber) {
 # -----------------------------------------------------------------
 
 # define contest caption number range, prepare to scrape ----------
-captionNumbers <- 1:560
+captionNumbers <- 1:563
 
 contestCaptions <- NULL
 
@@ -97,7 +97,7 @@ write_csv(contestCaptions, paste0(datadir, "contestcaptions.csv"))
 # -----------------------------------------------------------------
 
 # define page range
-dailyPageNums <- 1:81
+dailyPageNums <- 1:83
 
 issueCaptions <- NULL
 
