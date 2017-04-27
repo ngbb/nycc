@@ -28,6 +28,8 @@ getContestCaps <- function(contestNumber) {
   caps <- str_replace_all(caps, "\U00E9", "e")
   caps <- str_replace_all(caps, "(?<=\\b[A-Z])[.](?=[A-Z]|[ a-z]|[,])", "")
   caps <- str_replace_all(caps, " . . .", "...")
+  caps <- str_replace_all(caps, "&#13;", "")
+  caps <- str_trim(caps)
 
   return(caps)
 }
@@ -52,6 +54,8 @@ getIssueCaptions <- function(pageNumber) {
   caps <- str_replace_all(caps, "\U00E9", "e")
   caps <- str_replace_all(caps, "(?<=\\b[A-Z])[.](?=[A-Z]|[ a-z]|[,])", "")
   caps <- str_replace_all(caps, " . . .", "...")
+  caps <- str_replace_all(caps, "&#13;", "")
+  caps <- str_trim(caps)
   
   sess <- html_session(paste0("http://www.newyorker.com/cartoons/daily-cartoon/page/", pageNumber))
   imgsrc <- sess %>%
