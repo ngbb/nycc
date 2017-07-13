@@ -6,6 +6,10 @@ library(readr)
 topdir <- getwd()
 datadir <- paste0(topdir, "/data/")
 
+## set contest caption limit and daily cartoon page limit
+captionNumbers <- 1:572
+dailyPageNums <- 1:88
+
 ## Use rvest to scrape pages for captions -------------------
 
 getContestCaps <- function(contestNumber) {
@@ -37,7 +41,7 @@ getContestCaps <- function(contestNumber) {
 getIssueCaptions <- function(pageNumber) {
   
   cap <- read_html(paste0("http://www.newyorker.com/cartoons/daily-cartoon/page/", pageNumber))
-  caps <- html_nodes(cap, ".p-summary")
+  caps <- html_nodes(cap, ".River__dek___CayIg")
   caps <- as.character(caps)
 
   # clean up strings
@@ -63,11 +67,11 @@ getIssueCaptions <- function(pageNumber) {
     html_nodes("img")
 
   imgsrc <- unlist(str_split(imgsrc, "src\\=\""))
-  imgsrc <- imgsrc[str_detect(imgsrc, "http\\://www.newyorker.com/wp-content/uploads")]
+  imgsrc <- imgsrc[str_detect(imgsrc, "https\\://media.newyorker.com/photos")]
   imgs <- unlist(str_split(imgsrc, "\""))
-  imgs <- imgs[str_detect(imgs, "http\\://www.newyorker.com/wp-content/uploads")]
+  imgs <- imgs[str_detect(imgs, "https\\://media.newyorker.com/photos")]
   
-  imgs <- imgs[str_sub(imgs, start = -3) == "jpg" & str_sub(imgs, start = 1, end = 4) == "http"]
+ # imgs <- imgs[str_sub(imgs, start = -3) == "jpg" & str_sub(imgs, start = 1, end = 4) == "http"]
 
   return(list(caps, imgs))
 }
@@ -75,9 +79,6 @@ getIssueCaptions <- function(pageNumber) {
 # -----------------------------------------------------------------
 # run loops to scrape captions ------------------------------------
 # -----------------------------------------------------------------
-
-# define contest caption number range, prepare to scrape ----------
-captionNumbers <- 1:563
 
 contestCaptions <- NULL
 
@@ -93,15 +94,11 @@ for(i in captionNumbers) {
 names(contestCaptions) <- c("Caption", "Rank")
 
 # Save scraped data ---------------------------
-
 write_csv(contestCaptions, paste0(datadir, "contestcaptions.csv"))
 
 # -----------------------------------------------------------------
 # scrape regular captions from daily caption archive
 # -----------------------------------------------------------------
-
-# define page range
-dailyPageNums <- 1:83
 
 issueCaptions <- NULL
 
